@@ -34,13 +34,14 @@ namespace BatchTesting
             {
                 [ApimHeader] = _key
             };
-            HttpResponseMessage res = await SendJsonPostRequestAsync(_uri, batchInput, headers);
+            HttpResponseMessage res = await SendJsonPostRequestAsync(_uri, batchInput, headers).ConfigureAwait(false);
+
+            var responseString = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             if (res.StatusCode != HttpStatusCode.Accepted)
             {
-                throw new Exception($"Received status code {res.StatusCode} and message {await res.Content.ReadAsStringAsync()}");
+                throw new Exception($"Received status code {res.StatusCode} and message {responseString}");
             }
-            var responseString = await res.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<OperationContract>(responseString);
         }
 
@@ -53,17 +54,17 @@ namespace BatchTesting
                 [ApimHeader] = _key
             };
 
-            HttpResponseMessage res = await SendGetRequestAsync(url, headers);
+            var res = await SendGetRequestAsync(url, headers).ConfigureAwait(false);
+
+            var responseString = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             if (res.StatusCode != HttpStatusCode.OK)
             {
-                throw new Exception($"Received status code {res.StatusCode} and message {await res.Content.ReadAsStringAsync()}");
+                throw new Exception($"Received status code {res.StatusCode} and message {responseString}");
             }
-            var responseString = await res.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<OperationContract>(responseString);
         }
 
-        // TODO: handle pagination
         public async Task<EvaluationResult> GetEvaluationsResultAsync(string operationId)
         {
             var url = _uri + $"/{operationId}/result?verbose=true";
@@ -73,13 +74,14 @@ namespace BatchTesting
                 [ApimHeader] = _key
             };
 
-            HttpResponseMessage res = await SendGetRequestAsync(url, headers);
+            HttpResponseMessage res = await SendGetRequestAsync(url, headers).ConfigureAwait(false);
 
+            var responseString = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
+            
             if (res.StatusCode != HttpStatusCode.OK)
             {
-                throw new Exception($"Received status code {res.StatusCode} and message {await res.Content.ReadAsStringAsync()}");
+                throw new Exception($"Received status code {res.StatusCode} and message {responseString}");
             }
-            var responseString = await res.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<EvaluationResult>(responseString);
         }
 
@@ -88,7 +90,7 @@ namespace BatchTesting
             using (var requestMessage = new HttpRequestMessage(HttpMethod.Get, url))
             {
                 PopulateRequestMessageHeaders(headers, requestMessage);
-                HttpResponseMessage response = await _httpClient.SendAsync(requestMessage);
+                HttpResponseMessage response = await _httpClient.SendAsync(requestMessage).ConfigureAwait(false);
                 return response;
             }
         }
@@ -100,7 +102,7 @@ namespace BatchTesting
                 PopulateRequestMessageHeaders(headers, requestMessage);
                 var requestBodyAsJson = JsonConvert.SerializeObject(body);
                 requestMessage.Content = new StringContent(requestBodyAsJson, Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await _httpClient.SendAsync(requestMessage);
+                HttpResponseMessage response = await _httpClient.SendAsync(requestMessage).ConfigureAwait(false);
                 return response;
             }
         }
