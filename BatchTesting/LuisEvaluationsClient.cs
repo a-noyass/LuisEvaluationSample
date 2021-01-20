@@ -3,34 +3,36 @@
 
 namespace BatchTesting
 {
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
     using System.Text;
     using System.Threading.Tasks;
-    using Newtonsoft.Json;
 
-    internal class LuisBatchTestClient
+    internal class LuisEvaluationsClient
     {
+        private const string ApimHeader = "Ocp-Apim-Subscription-Key";
+
         private readonly string _key;
 
         private readonly string _uri;
 
         private static HttpClient _httpClient;
 
-        public LuisBatchTestClient(string endpoint, string appId, string key)
+        public LuisEvaluationsClient(string endpoint, string appId, string key)
         {
             _key = key;
             _uri = $"{endpoint}/luis/v3.0-preview/apps/{appId}/slots/production/evaluations";
             _httpClient = new HttpClient();
         }
 
-        public async Task<OperationStatus> CreateEvaluationsOperationAsync(BatchTestingRequest batchInput)
+        public async Task<OperationContract> CreateEvaluationsOperationAsync(LuisEvaluationsRequest batchInput)
         {
             var headers = new Dictionary<string, string>()
             {
-                ["Ocp-Apim-Subscription-Key"] = _key
+                [ApimHeader] = _key
             };
             HttpResponseMessage res = await SendJsonPostRequestAsync(_uri, batchInput, headers);
 
@@ -39,16 +41,16 @@ namespace BatchTesting
                 throw new Exception($"Received status code {res.StatusCode} and message {await res.Content.ReadAsStringAsync()}");
             }
             var responseString = await res.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<OperationStatus>(responseString);
+            return JsonConvert.DeserializeObject<OperationContract>(responseString);
         }
 
-        public async Task<OperationStatus> GetEvaluationsStatusAsync(string operationId)
+        public async Task<OperationContract> GetEvaluationsStatusAsync(string operationId)
         {
             var url = _uri + $"/{operationId}/status";
 
             var headers = new Dictionary<string, string>()
             {
-                ["Ocp-Apim-Subscription-Key"] = _key
+                [ApimHeader] = _key
             };
 
             HttpResponseMessage res = await SendGetRequestAsync(url, headers);
@@ -58,7 +60,7 @@ namespace BatchTesting
                 throw new Exception($"Received status code {res.StatusCode} and message {await res.Content.ReadAsStringAsync()}");
             }
             var responseString = await res.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<OperationStatus>(responseString);
+            return JsonConvert.DeserializeObject<OperationContract>(responseString);
         }
 
         // TODO: handle pagination
@@ -68,7 +70,7 @@ namespace BatchTesting
 
             var headers = new Dictionary<string, string>()
             {
-                ["Ocp-Apim-Subscription-Key"] = _key
+                [ApimHeader] = _key
             };
 
             HttpResponseMessage res = await SendGetRequestAsync(url, headers);

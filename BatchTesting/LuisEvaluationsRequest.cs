@@ -1,10 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
+
 using Newtonsoft.Json;
 
 namespace BatchTesting
 {
-    class BatchTestingRequest
+    class LuisEvaluationsRequest
     {
         [JsonProperty("LabeledTestSetUtterances")]
         public LabeledTestSetUtterance[] LabeledTestSetUtterances { get; set; }
