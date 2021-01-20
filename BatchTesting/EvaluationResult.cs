@@ -1,8 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using Newtonsoft.Json;
 
 namespace BatchTesting
 {
-    public partial class EvaluationResult
+    public class EvaluationResult
     {
         [JsonProperty("intentModelsStats")]
         public IntentModelsStat[] IntentModelsStats { get; set; }
@@ -14,7 +17,7 @@ namespace BatchTesting
         public UtterancesStat[] UtterancesStats { get; set; }
     }
 
-    public partial class EntityModelsStat
+    public class EntityModelsStat
     {
         [JsonProperty("modelName")]
         public string ModelName { get; set; }
@@ -38,7 +41,7 @@ namespace BatchTesting
         public double EntityTypeFScore { get; set; }
     }
 
-    public partial class IntentModelsStat
+    public class IntentModelsStat
     {
         [JsonProperty("modelName")]
         public string ModelName { get; set; }
@@ -56,7 +59,7 @@ namespace BatchTesting
         public double FScore { get; set; }
     }
 
-    public partial class UtterancesStat
+    public class UtterancesStat
     {
         [JsonProperty("text")]
         public string Text { get; set; }
@@ -74,7 +77,7 @@ namespace BatchTesting
         public object[] FalseNegativeEntities { get; set; }
     }
 
-    public partial class FalsePositiveEntity
+    public class FalsePositiveEntity
     {
         [JsonProperty("entityName")]
         public string EntityName { get; set; }
